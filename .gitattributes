@@ -1,0 +1,24 @@
+# Normalize text files to LF in the repo; checkout follows the platform
+* text=auto
+
+# Unity YAML assets: never touch line endings, merge as text
+*.unity     text eol=lf
+*.prefab    text eol=lf
+*.asset     text eol=lf
+*.meta      text eol=lf
+*.mat       text eol=lf
+*.anim      text eol=lf
+*.controller text eol=lf
+*.cs        text diff=csharp
+
+# Binary
+*.png  binary
+*.jpg  binary
+*.psd  binary
+*.onnx binary
+*.nn   binary
+*.pt   binary
+*.dll  binary
+*.exe  binary
+*.ttf  binary
+*.otf  binary

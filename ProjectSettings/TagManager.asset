@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3462280971
+    locked: 0
+  - name: Board
+    uniqueID: 221148977
+    locked: 0
+  - name: Tiles
+    uniqueID: 636340311
+    locked: 0
+  - name: Ladders
+    uniqueID: 4187120853
+    locked: 0
+  - name: pawns
+    uniqueID: 3229240159
+    locked: 0
+  - name: Arrows
+    uniqueID: 1044520151
+    locked: 0
+  - name: EndGamePanel
+    uniqueID: 1462690761
+    locked: 0

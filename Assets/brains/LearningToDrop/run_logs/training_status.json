@@ -1,0 +1,65 @@
+{
+    "Droping": {
+        "checkpoints": [
+            {
+                "steps": 119992,
+                "file_path": "results\\LearningToDrop\\Droping\\Droping-119992.onnx",
+                "reward": -34.75,
+                "creation_time": 1739375547.4070883,
+                "auxillary_file_paths": [
+                    "results\\LearningToDrop\\Droping\\Droping-119992.pt"
+                ]
+            },
+            {
+                "steps": 124986,
+                "file_path": "results\\LearningToDrop\\Droping\\Droping-124986.onnx",
+                "reward": -4.0,
+                "creation_time": 1739375683.682595,
+                "auxillary_file_paths": [
+                    "results\\LearningToDrop\\Droping\\Droping-124986.pt"
+                ]
+            },
+            {
+                "steps": 129983,
+                "file_path": "results\\LearningToDrop\\Droping\\Droping-129983.onnx",
+                "reward": -16.8,
+                "creation_time": 1739375837.5310571,
+                "auxillary_file_paths": [
+                    "results\\LearningToDrop\\Droping\\Droping-129983.pt"
+                ]
+            },
+            {
+                "steps": 134938,
+                "file_path": "results\\LearningToDrop\\Droping\\Droping-134938.onnx",
+                "reward": -23.0,
+                "creation_time": 1739375980.7614222,
+                "auxillary_file_paths": [
+                    "results\\LearningToDrop\\Droping\\Droping-134938.pt"
+                ]
+            },
+            {
+                "steps": 138840,
+                "file_path": "results\\LearningToDrop\\Droping\\Droping-138840.onnx",
+                "reward": 8.333333333333334,
+                "creation_time": 1739376096.8980033,
+                "auxillary_file_paths": [
+                    "results\\LearningToDrop\\Droping\\Droping-138840.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 138840,
+            "file_path": "results\\LearningToDrop\\Droping.onnx",
+            "reward": 8.333333333333334,
+            "creation_time": 1739376096.8980033,
+            "auxillary_file_paths": [
+                "results\\LearningToDrop\\Droping\\Droping-138840.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2+cpu"
+    }
+}

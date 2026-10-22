@@ -1,0 +1,278 @@
+{
+    "MovingTilesToPlayer": {
+        "checkpoints": [
+            {
+                "steps": 129969,
+                "file_path": "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-129969.onnx",
+                "reward": 196.75000562270483,
+                "creation_time": 1739788362.6195884,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-129969.pt"
+                ]
+            },
+            {
+                "steps": 134982,
+                "file_path": "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-134982.onnx",
+                "reward": 353.0000123977661,
+                "creation_time": 1739788677.7828486,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-134982.pt"
+                ]
+            },
+            {
+                "steps": 139994,
+                "file_path": "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-139994.onnx",
+                "reward": 179.28000499010085,
+                "creation_time": 1739788919.856202,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-139994.pt"
+                ]
+            },
+            {
+                "steps": 144993,
+                "file_path": "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-144993.onnx",
+                "reward": -21.700001001358032,
+                "creation_time": 1739789157.6059182,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-144993.pt"
+                ]
+            },
+            {
+                "steps": 148062,
+                "file_path": "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-148062.onnx",
+                "reward": 173.70000395178795,
+                "creation_time": 1739789439.8936663,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-148062.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 148062,
+            "file_path": "results\\improvedRewardSystem\\MovingTilesToPlayer.onnx",
+            "reward": 173.70000395178795,
+            "creation_time": 1739789439.8936663,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\MovingTilesToPlayer\\MovingTilesToPlayer-148062.pt"
+            ]
+        }
+    },
+    "Droping": {
+        "checkpoints": [
+            {
+                "steps": 124944,
+                "file_path": "results\\improvedRewardSystem\\Droping\\Droping-124944.onnx",
+                "reward": 13960.0,
+                "creation_time": 1739788578.2674105,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Droping\\Droping-124944.pt"
+                ]
+            },
+            {
+                "steps": 129997,
+                "file_path": "results\\improvedRewardSystem\\Droping\\Droping-129997.onnx",
+                "reward": 13912.5,
+                "creation_time": 1739788800.4885097,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Droping\\Droping-129997.pt"
+                ]
+            },
+            {
+                "steps": 134987,
+                "file_path": "results\\improvedRewardSystem\\Droping\\Droping-134987.onnx",
+                "reward": 14220.0,
+                "creation_time": 1739789002.026497,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Droping\\Droping-134987.pt"
+                ]
+            },
+            {
+                "steps": 139984,
+                "file_path": "results\\improvedRewardSystem\\Droping\\Droping-139984.onnx",
+                "reward": 14136.0,
+                "creation_time": 1739789223.2401228,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Droping\\Droping-139984.pt"
+                ]
+            },
+            {
+                "steps": 141853,
+                "file_path": "results\\improvedRewardSystem\\Droping\\Droping-141853.onnx",
+                "reward": 13438.333333333334,
+                "creation_time": 1739789440.1993058,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Droping\\Droping-141853.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 141853,
+            "file_path": "results\\improvedRewardSystem\\Droping.onnx",
+            "reward": 13438.333333333334,
+            "creation_time": 1739789440.1993058,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\Droping\\Droping-141853.pt"
+            ]
+        }
+    },
+    "MovingPawn": {
+        "checkpoints": [
+            {
+                "steps": 74979,
+                "file_path": "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-74979.onnx",
+                "reward": 813.0,
+                "creation_time": 1739787873.3309624,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-74979.pt"
+                ]
+            },
+            {
+                "steps": 79953,
+                "file_path": "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-79953.onnx",
+                "reward": 778.3,
+                "creation_time": 1739788260.9303198,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-79953.pt"
+                ]
+            },
+            {
+                "steps": 84991,
+                "file_path": "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-84991.onnx",
+                "reward": 914.0,
+                "creation_time": 1739788678.8443692,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-84991.pt"
+                ]
+            },
+            {
+                "steps": 89965,
+                "file_path": "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-89965.onnx",
+                "reward": 837.2222222222222,
+                "creation_time": 1739789078.0104618,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-89965.pt"
+                ]
+            },
+            {
+                "steps": 93153,
+                "file_path": "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-93153.onnx",
+                "reward": null,
+                "creation_time": 1739789440.0024753,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-93153.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 93153,
+            "file_path": "results\\improvedRewardSystem\\MovingPawn.onnx",
+            "reward": null,
+            "creation_time": 1739789440.0024753,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\MovingPawn\\MovingPawn-93153.pt"
+            ]
+        }
+    },
+    "Picking": {
+        "checkpoints": [
+            {
+                "steps": 4939,
+                "file_path": "results\\improvedRewardSystem\\Picking\\Picking-4939.onnx",
+                "reward": 59.51282051282051,
+                "creation_time": 1739786884.7489023,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Picking\\Picking-4939.pt"
+                ]
+            },
+            {
+                "steps": 7671,
+                "file_path": "results\\improvedRewardSystem\\Picking\\Picking-7671.onnx",
+                "reward": 56.68376068376068,
+                "creation_time": 1739789440.100515,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\Picking\\Picking-7671.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 7671,
+            "file_path": "results\\improvedRewardSystem\\Picking.onnx",
+            "reward": 56.68376068376068,
+            "creation_time": 1739789440.100515,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\Picking\\Picking-7671.pt"
+            ]
+        }
+    },
+    "MovingToCenterPunish": {
+        "checkpoints": [
+            {
+                "steps": 966,
+                "file_path": "results\\improvedRewardSystem\\MovingToCenterPunish\\MovingToCenterPunish-966.onnx",
+                "reward": -26.03448275862069,
+                "creation_time": 1739789440.3076823,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\MovingToCenterPunish\\MovingToCenterPunish-966.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 966,
+            "file_path": "results\\improvedRewardSystem\\MovingToCenterPunish.onnx",
+            "reward": -26.03448275862069,
+            "creation_time": 1739789440.3076823,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\MovingToCenterPunish\\MovingToCenterPunish-966.pt"
+            ]
+        }
+    },
+    "StealingBasic": {
+        "checkpoints": [
+            {
+                "steps": 456,
+                "file_path": "results\\improvedRewardSystem\\StealingBasic\\StealingBasic-456.onnx",
+                "reward": 0.1111111111111111,
+                "creation_time": 1739789440.4266117,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\StealingBasic\\StealingBasic-456.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 456,
+            "file_path": "results\\improvedRewardSystem\\StealingBasic.onnx",
+            "reward": 0.1111111111111111,
+            "creation_time": 1739789440.4266117,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\StealingBasic\\StealingBasic-456.pt"
+            ]
+        }
+    },
+    "EndingGame": {
+        "checkpoints": [
+            {
+                "steps": 1,
+                "file_path": "results\\improvedRewardSystem\\EndingGame\\EndingGame-1.onnx",
+                "reward": -1.0,
+                "creation_time": 1739789440.5715446,
+                "auxillary_file_paths": [
+                    "results\\improvedRewardSystem\\EndingGame\\EndingGame-1.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1,
+            "file_path": "results\\improvedRewardSystem\\EndingGame.onnx",
+            "reward": -1.0,
+            "creation_time": 1739789440.5715446,
+            "auxillary_file_paths": [
+                "results\\improvedRewardSystem\\EndingGame\\EndingGame-1.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2+cpu"
+    }
+}

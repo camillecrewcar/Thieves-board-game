@@ -1,0 +1,53 @@
+# Unity generated
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+/Assets/Plugins/PlasticSCM*
+/Assets/Plugins/PlasticSCM*.meta
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+sysinfo.txt
+crashlytics-build.properties
+
+# Built game
+/game/
+*.apk
+*.aab
+*.unitypackage
+
+# IDE / generated project files
+.vs/
+.vscode/
+.idea/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.tmp
+UpgradeLog*.htm
+ExportedObj/
+
+# Plastic SCM
+.plastic/
+ignore.conf
+
+# ML-Agents: local library copy, Python env and training output
+/ml-agents/
+/ml-agents-envs/
+/venv/
+/results/
+__pycache__/
+*.pyc

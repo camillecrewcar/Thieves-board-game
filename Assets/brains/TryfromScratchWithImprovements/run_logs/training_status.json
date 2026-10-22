@@ -1,0 +1,314 @@
+{
+    "MovingTilesToPlayer": {
+        "checkpoints": [
+            {
+                "steps": 914974,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-914974.onnx",
+                "reward": 331.30000054836273,
+                "creation_time": 1739353098.2702675,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-914974.pt"
+                ]
+            },
+            {
+                "steps": 919955,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-919955.onnx",
+                "reward": 939.8799944162369,
+                "creation_time": 1739353356.2896278,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-919955.pt"
+                ]
+            },
+            {
+                "steps": 924987,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-924987.onnx",
+                "reward": null,
+                "creation_time": 1739353607.2649846,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-924987.pt"
+                ]
+            },
+            {
+                "steps": 929996,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-929996.onnx",
+                "reward": 714.2599974870682,
+                "creation_time": 1739353933.7542646,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-929996.pt"
+                ]
+            },
+            {
+                "steps": 930316,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-930316.onnx",
+                "reward": 714.2599974870682,
+                "creation_time": 1739353994.5485487,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-930316.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 930316,
+            "file_path": "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer.onnx",
+            "reward": 714.2599974870682,
+            "creation_time": 1739353994.5485487,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\MovingTilesToPlayer\\MovingTilesToPlayer-930316.pt"
+            ]
+        }
+    },
+    "MovingPawn": {
+        "checkpoints": [
+            {
+                "steps": 609962,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-609962.onnx",
+                "reward": 299.6666666666667,
+                "creation_time": 1739352706.5499306,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-609962.pt"
+                ]
+            },
+            {
+                "steps": 614936,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-614936.onnx",
+                "reward": 288.1111111111111,
+                "creation_time": 1739353099.6625571,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-614936.pt"
+                ]
+            },
+            {
+                "steps": 619974,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-619974.onnx",
+                "reward": 294.0,
+                "creation_time": 1739353502.7921805,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-619974.pt"
+                ]
+            },
+            {
+                "steps": 624977,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-624977.onnx",
+                "reward": 295.3,
+                "creation_time": 1739353910.6338966,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-624977.pt"
+                ]
+            },
+            {
+                "steps": 625361,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-625361.onnx",
+                "reward": 295.3,
+                "creation_time": 1739353994.614197,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-625361.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 625361,
+            "file_path": "results\\TryfromScratchWithImprovements\\MovingPawn.onnx",
+            "reward": 295.3,
+            "creation_time": 1739353994.614197,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\MovingPawn\\MovingPawn-625361.pt"
+            ]
+        }
+    },
+    "Picking": {
+        "checkpoints": [
+            {
+                "steps": 39949,
+                "file_path": "results\\TryfromScratchWithImprovements\\Picking\\Picking-39949.onnx",
+                "reward": 70.0,
+                "creation_time": 1739318018.330607,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Picking\\Picking-39949.pt"
+                ]
+            },
+            {
+                "steps": 44988,
+                "file_path": "results\\TryfromScratchWithImprovements\\Picking\\Picking-44988.onnx",
+                "reward": 30.5,
+                "creation_time": 1739323691.0310986,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Picking\\Picking-44988.pt"
+                ]
+            },
+            {
+                "steps": 49986,
+                "file_path": "results\\TryfromScratchWithImprovements\\Picking\\Picking-49986.onnx",
+                "reward": 21.10927152317881,
+                "creation_time": 1739337505.5438783,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Picking\\Picking-49986.pt"
+                ]
+            },
+            {
+                "steps": 54982,
+                "file_path": "results\\TryfromScratchWithImprovements\\Picking\\Picking-54982.onnx",
+                "reward": 16.24418604651163,
+                "creation_time": 1739352483.9281623,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Picking\\Picking-54982.pt"
+                ]
+            },
+            {
+                "steps": 55450,
+                "file_path": "results\\TryfromScratchWithImprovements\\Picking\\Picking-55450.onnx",
+                "reward": 16.17948717948718,
+                "creation_time": 1739353994.6751332,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Picking\\Picking-55450.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 55450,
+            "file_path": "results\\TryfromScratchWithImprovements\\Picking.onnx",
+            "reward": 16.17948717948718,
+            "creation_time": 1739353994.6751332,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\Picking\\Picking-55450.pt"
+            ]
+        }
+    },
+    "Droping": {
+        "checkpoints": [
+            {
+                "steps": 1134968,
+                "file_path": "results\\TryfromScratchWithImprovements\\Droping\\Droping-1134968.onnx",
+                "reward": -0.028169014084507043,
+                "creation_time": 1739353411.1487927,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Droping\\Droping-1134968.pt"
+                ]
+            },
+            {
+                "steps": 1139962,
+                "file_path": "results\\TryfromScratchWithImprovements\\Droping\\Droping-1139962.onnx",
+                "reward": -0.02702702702702703,
+                "creation_time": 1739353582.9416485,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Droping\\Droping-1139962.pt"
+                ]
+            },
+            {
+                "steps": 1144975,
+                "file_path": "results\\TryfromScratchWithImprovements\\Droping\\Droping-1144975.onnx",
+                "reward": -0.02631578947368421,
+                "creation_time": 1739353737.9714425,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Droping\\Droping-1144975.pt"
+                ]
+            },
+            {
+                "steps": 1149957,
+                "file_path": "results\\TryfromScratchWithImprovements\\Droping\\Droping-1149957.onnx",
+                "reward": -0.02531645569620253,
+                "creation_time": 1739353895.6490898,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Droping\\Droping-1149957.pt"
+                ]
+            },
+            {
+                "steps": 1151109,
+                "file_path": "results\\TryfromScratchWithImprovements\\Droping\\Droping-1151109.onnx",
+                "reward": -0.02531645569620253,
+                "creation_time": 1739353994.7335572,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\Droping\\Droping-1151109.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1151109,
+            "file_path": "results\\TryfromScratchWithImprovements\\Droping.onnx",
+            "reward": -0.02531645569620253,
+            "creation_time": 1739353994.7335572,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\Droping\\Droping-1151109.pt"
+            ]
+        }
+    },
+    "MovingToCenterPunish": {
+        "checkpoints": [
+            {
+                "steps": 4996,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingToCenterPunish\\MovingToCenterPunish-4996.onnx",
+                "reward": -30.682692307692307,
+                "creation_time": 1739336999.716533,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingToCenterPunish\\MovingToCenterPunish-4996.pt"
+                ]
+            },
+            {
+                "steps": 6528,
+                "file_path": "results\\TryfromScratchWithImprovements\\MovingToCenterPunish\\MovingToCenterPunish-6528.onnx",
+                "reward": -25.528735632183906,
+                "creation_time": 1739353994.8535342,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\MovingToCenterPunish\\MovingToCenterPunish-6528.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 6528,
+            "file_path": "results\\TryfromScratchWithImprovements\\MovingToCenterPunish.onnx",
+            "reward": -25.528735632183906,
+            "creation_time": 1739353994.8535342,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\MovingToCenterPunish\\MovingToCenterPunish-6528.pt"
+            ]
+        }
+    },
+    "StealingBasic": {
+        "checkpoints": [
+            {
+                "steps": 3450,
+                "file_path": "results\\TryfromScratchWithImprovements\\StealingBasic\\StealingBasic-3450.onnx",
+                "reward": -0.017543859649122806,
+                "creation_time": 1739353994.803047,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\StealingBasic\\StealingBasic-3450.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 3450,
+            "file_path": "results\\TryfromScratchWithImprovements\\StealingBasic.onnx",
+            "reward": -0.017543859649122806,
+            "creation_time": 1739353994.803047,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\StealingBasic\\StealingBasic-3450.pt"
+            ]
+        }
+    },
+    "EndingGame": {
+        "checkpoints": [
+            {
+                "steps": 0,
+                "file_path": "results\\TryfromScratchWithImprovements\\EndingGame\\EndingGame-0.onnx",
+                "reward": null,
+                "creation_time": 1739353994.9119906,
+                "auxillary_file_paths": [
+                    "results\\TryfromScratchWithImprovements\\EndingGame\\EndingGame-0.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 0,
+            "file_path": "results\\TryfromScratchWithImprovements\\EndingGame.onnx",
+            "reward": null,
+            "creation_time": 1739353994.9119906,
+            "auxillary_file_paths": [
+                "results\\TryfromScratchWithImprovements\\EndingGame\\EndingGame-0.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2+cpu"
+    }
+}

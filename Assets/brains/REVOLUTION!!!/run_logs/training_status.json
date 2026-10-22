@@ -1,0 +1,278 @@
+{
+    "MovingTilesToPlayer": {
+        "checkpoints": [
+            {
+                "steps": 119962,
+                "file_path": "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-119962.onnx",
+                "reward": 122.30000097751618,
+                "creation_time": 1739633285.4648547,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-119962.pt"
+                ]
+            },
+            {
+                "steps": 124962,
+                "file_path": "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-124962.onnx",
+                "reward": 45.399999499320984,
+                "creation_time": 1739633641.313121,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-124962.pt"
+                ]
+            },
+            {
+                "steps": 129985,
+                "file_path": "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-129985.onnx",
+                "reward": 88.32000074386596,
+                "creation_time": 1739634044.7544339,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-129985.pt"
+                ]
+            },
+            {
+                "steps": 134975,
+                "file_path": "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-134975.onnx",
+                "reward": 221.7999997138977,
+                "creation_time": 1739634445.617072,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-134975.pt"
+                ]
+            },
+            {
+                "steps": 139402,
+                "file_path": "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-139402.onnx",
+                "reward": 295.0666704028845,
+                "creation_time": 1739634811.2282996,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-139402.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 139402,
+            "file_path": "results\\REVOLUTION!!!\\MovingTilesToPlayer.onnx",
+            "reward": 295.0666704028845,
+            "creation_time": 1739634811.2282996,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\MovingTilesToPlayer\\MovingTilesToPlayer-139402.pt"
+            ]
+        }
+    },
+    "Droping": {
+        "checkpoints": [
+            {
+                "steps": 104940,
+                "file_path": "results\\REVOLUTION!!!\\Droping\\Droping-104940.onnx",
+                "reward": 15960.0,
+                "creation_time": 1739633717.059931,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Droping\\Droping-104940.pt"
+                ]
+            },
+            {
+                "steps": 109961,
+                "file_path": "results\\REVOLUTION!!!\\Droping\\Droping-109961.onnx",
+                "reward": 11782.0,
+                "creation_time": 1739634120.4429214,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Droping\\Droping-109961.pt"
+                ]
+            },
+            {
+                "steps": 114998,
+                "file_path": "results\\REVOLUTION!!!\\Droping\\Droping-114998.onnx",
+                "reward": 12005.0,
+                "creation_time": 1739634478.4860475,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Droping\\Droping-114998.pt"
+                ]
+            },
+            {
+                "steps": 119986,
+                "file_path": "results\\REVOLUTION!!!\\Droping\\Droping-119986.onnx",
+                "reward": 12674.0,
+                "creation_time": 1739634793.5787563,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Droping\\Droping-119986.pt"
+                ]
+            },
+            {
+                "steps": 120326,
+                "file_path": "results\\REVOLUTION!!!\\Droping\\Droping-120326.onnx",
+                "reward": 12493.333333333334,
+                "creation_time": 1739634811.3862486,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Droping\\Droping-120326.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 120326,
+            "file_path": "results\\REVOLUTION!!!\\Droping.onnx",
+            "reward": 12493.333333333334,
+            "creation_time": 1739634811.3862486,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\Droping\\Droping-120326.pt"
+            ]
+        }
+    },
+    "MovingPawn": {
+        "checkpoints": [
+            {
+                "steps": 69980,
+                "file_path": "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-69980.onnx",
+                "reward": -1263.6,
+                "creation_time": 1739632834.6327498,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-69980.pt"
+                ]
+            },
+            {
+                "steps": 74983,
+                "file_path": "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-74983.onnx",
+                "reward": -1167.0,
+                "creation_time": 1739633399.340211,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-74983.pt"
+                ]
+            },
+            {
+                "steps": 79957,
+                "file_path": "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-79957.onnx",
+                "reward": -1171.4,
+                "creation_time": 1739633999.105679,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-79957.pt"
+                ]
+            },
+            {
+                "steps": 84995,
+                "file_path": "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-84995.onnx",
+                "reward": -1078.0,
+                "creation_time": 1739634619.1330307,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-84995.pt"
+                ]
+            },
+            {
+                "steps": 86697,
+                "file_path": "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-86697.onnx",
+                "reward": -1040.0,
+                "creation_time": 1739634811.286786,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-86697.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 86697,
+            "file_path": "results\\REVOLUTION!!!\\MovingPawn.onnx",
+            "reward": -1040.0,
+            "creation_time": 1739634811.286786,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\MovingPawn\\MovingPawn-86697.pt"
+            ]
+        }
+    },
+    "Picking": {
+        "checkpoints": [
+            {
+                "steps": 4998,
+                "file_path": "results\\REVOLUTION!!!\\Picking\\Picking-4998.onnx",
+                "reward": -55.30769230769231,
+                "creation_time": 1739632051.148431,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Picking\\Picking-4998.pt"
+                ]
+            },
+            {
+                "steps": 6706,
+                "file_path": "results\\REVOLUTION!!!\\Picking\\Picking-6706.onnx",
+                "reward": -55.11926605504587,
+                "creation_time": 1739634811.3361268,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\Picking\\Picking-6706.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 6706,
+            "file_path": "results\\REVOLUTION!!!\\Picking.onnx",
+            "reward": -55.11926605504587,
+            "creation_time": 1739634811.3361268,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\Picking\\Picking-6706.pt"
+            ]
+        }
+    },
+    "MovingToCenterPunish": {
+        "checkpoints": [
+            {
+                "steps": 1056,
+                "file_path": "results\\REVOLUTION!!!\\MovingToCenterPunish\\MovingToCenterPunish-1056.onnx",
+                "reward": -32.08256880733945,
+                "creation_time": 1739634811.4381142,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\MovingToCenterPunish\\MovingToCenterPunish-1056.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1056,
+            "file_path": "results\\REVOLUTION!!!\\MovingToCenterPunish.onnx",
+            "reward": -32.08256880733945,
+            "creation_time": 1739634811.4381142,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\MovingToCenterPunish\\MovingToCenterPunish-1056.pt"
+            ]
+        }
+    },
+    "EndingGame": {
+        "checkpoints": [
+            {
+                "steps": 1,
+                "file_path": "results\\REVOLUTION!!!\\EndingGame\\EndingGame-1.onnx",
+                "reward": 1.0,
+                "creation_time": 1739634811.4885888,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\EndingGame\\EndingGame-1.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1,
+            "file_path": "results\\REVOLUTION!!!\\EndingGame.onnx",
+            "reward": 1.0,
+            "creation_time": 1739634811.4885888,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\EndingGame\\EndingGame-1.pt"
+            ]
+        }
+    },
+    "StealingBasic": {
+        "checkpoints": [
+            {
+                "steps": 437,
+                "file_path": "results\\REVOLUTION!!!\\StealingBasic\\StealingBasic-437.onnx",
+                "reward": 0.13131313131313133,
+                "creation_time": 1739634811.5500717,
+                "auxillary_file_paths": [
+                    "results\\REVOLUTION!!!\\StealingBasic\\StealingBasic-437.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 437,
+            "file_path": "results\\REVOLUTION!!!\\StealingBasic.onnx",
+            "reward": 0.13131313131313133,
+            "creation_time": 1739634811.5500717,
+            "auxillary_file_paths": [
+                "results\\REVOLUTION!!!\\StealingBasic\\StealingBasic-437.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.2.0.dev0",
+        "torch_version": "2.2.2+cpu"
+    }
+}
