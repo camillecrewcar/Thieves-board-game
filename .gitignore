@@ -48,6 +48,12 @@ ignore.conf
 /ml-agents/
 /ml-agents-envs/
 /venv/
-/results/
+# training output, except the latest checkpoint of the current run (to resume training on another PC)
+/results/*
+!/results/thief_v3/
+/results/thief_v3/*
+!/results/thief_v3/Thief/
+/results/thief_v3/Thief/*
+!/results/thief_v3/Thief/checkpoint.pt
 __pycache__/
 *.pyc
