@@ -54,6 +54,8 @@ public class ThiefAgent : Agent
     const float CrownInVaultReward = 0.2f;
     // ending the game is a bet: rewarded when the player leads, punished when it does not
     const float EndingBetReward = 0.5f;
+    // taking items back out of the own vault: punished once, dropping them back does not undo it
+    const float VaultPickPenalty = 0.2f;
 
     public Decision Kind { get; private set; }
     public bool CanStopSliding { get; private set; }
@@ -142,6 +144,10 @@ public class ThiefAgent : Agent
     {
         LastAction = actions.DiscreteActions[0];
         waitingForAction = false;
+        if ((LastAction == PickCoin || LastAction == PickCrown) && System.Array.IndexOf(player.vaultPositions, player.currentPosition) >= 0)
+        {
+            AddReward(-VaultPickPenalty);
+        }
     }
 
     // used without a trained model: a random legal choice
