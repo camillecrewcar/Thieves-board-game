@@ -66,6 +66,8 @@ public class ThiefAgent : Agent
     private bool waitingForAction;
     private float lastPotential;
     private bool warnedObservationSize;
+    // items taken back out of the own vault this game, reported to TensorBoard
+    private int vaultPicks;
 
     public static ThiefAgent Create(MapController map, Player player, bool training, NNModel model)
     {
@@ -105,6 +107,7 @@ public class ThiefAgent : Agent
     {
         RewardVaultChange();
         AddReward(placementReward);
+        Academy.Instance.StatsRecorder.Add("Game/Vault picks", vaultPicks);
         EndEpisode();
     }
 
@@ -112,6 +115,7 @@ public class ThiefAgent : Agent
     {
         lastPotential = 0f;
         waitingForAction = false;
+        vaultPicks = 0;
     }
 
     void RewardVaultChange()
@@ -138,6 +142,7 @@ public class ThiefAgent : Agent
     public void RewardEndingDecision(bool leading)
     {
         AddReward(leading ? EndingBetReward : -EndingBetReward);
+        Academy.Instance.StatsRecorder.Add("Game/Ended while leading", leading ? 1f : 0f);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -147,6 +152,7 @@ public class ThiefAgent : Agent
         if ((LastAction == PickCoin || LastAction == PickCrown) && System.Array.IndexOf(player.vaultPositions, player.currentPosition) >= 0)
         {
             AddReward(-VaultPickPenalty);
+            vaultPicks++;
         }
     }
 

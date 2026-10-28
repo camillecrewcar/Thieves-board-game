@@ -80,7 +80,8 @@ public class MapController : MonoBehaviour
     }
     public bool hasMoved = false;
     private int moveCount = 0;
-    private System.Random random = new System.Random();
+    // seeded per board: boards created in the same moment would otherwise play the same game
+    private System.Random random = new System.Random(Guid.NewGuid().GetHashCode());
     public int resultOfLastDiceRoll;
     private bool isCrownClicked;
     private List<Coin> allCoins = new List<Coin>();
@@ -138,13 +139,36 @@ public class MapController : MonoBehaviour
             MainMenu.Show(this);
             return;
         }
+        if (GameSettings.Current.mode == GameMode.Training) SpawnTrainingAreas(GameSettings.Current.areas);
         StartGame(GameSettings.Current);
     }
+
+    // training with "-areas N": copies of the whole grid side by side, each running its own game with its own agents,
+    // so mlagents-learn gets the decisions of several games in one step (one network call instead of one per game)
+    static bool trainingAreasSpawned;
+    const float TrainingAreaSpacing = 12f;
+    void SpawnTrainingAreas(int count)
+    {
+        if (trainingAreasSpawned) return;
+        trainingAreasSpawned = true;
+        // copied before StartGame, so the copies start from the player assets, not from this game's players
+        Transform board = transform.parent;
+        for (int i = 1; i < count; i++)
+        {
+            GameObject copy = Instantiate(board.gameObject, board.position + Vector3.right * TrainingAreaSpacing * i, board.rotation, board.parent);
+            copy.name = board.name + " " + (i + 1);
+        }
+    }
+
     public void StartGame(GameSettings settings)
     {
         ApplySettings(settings);
-        MainMenu.ShowInGameMenuButton();
-        hud = GameHud.Create(this);
+        // the menu and the HUD belong to a game played on screen; training runs without them
+        if (!isLearning)
+        {
+            MainMenu.ShowInGameMenuButton();
+            hud = GameHud.Create(this);
+        }
         SetupGame();
     }
     void ApplySettings(GameSettings settings)
@@ -238,9 +262,12 @@ public class MapController : MonoBehaviour
         textOfTileContetLabel.text = "Zawartość pola";
         tileContentPanel.gameObject.SetActive(true);
         EQContentPanel.gameObject.SetActive(true);
-        for (int i = tileContentPanel.childCount - 1; i >= 0; i--)
+        if (!isLearning)
         {
-            GameObject.Destroy(tileContentPanel.GetChild(i).gameObject);
+            for (int i = tileContentPanel.childCount - 1; i >= 0; i--)
+            {
+                GameObject.Destroy(tileContentPanel.GetChild(i).gameObject);
+            }
         }
         currentPlayer = (currentPlayer + 1) % players.Length;
         ShowEQ(players[currentPlayer]);
@@ -504,6 +531,10 @@ public class MapController : MonoBehaviour
         if (thiefAgents.Count == 0) return;
         Dictionary<Player, int> scores = new Dictionary<Player, int>();
         foreach (Player player in players) scores[player] = Results.Score(this, player, out _, out _);
+        // game statistics for TensorBoard, also used to compare models against fixed opponents
+        StatsRecorder stats = Academy.Instance.StatsRecorder;
+        stats.Add("Game/Rounds", numberOfRound);
+        stats.Add("Game/Hit round limit", trainingRoundLimit > 0 && numberOfRound > trainingRoundLimit ? 1f : 0f);
         foreach (KeyValuePair<Player, ThiefAgent> entry in thiefAgents)
         {
             // an agent whose seat was played by a random player this game took no decisions in it
@@ -516,6 +547,8 @@ public class MapController : MonoBehaviour
                 else if (scores[other] == scores[entry.Key]) equal++;
             }
             float place = better + equal / 2f;
+            stats.Add("Game/Placement", place + 1f);
+            stats.Add("Game/Win", better == 0 && equal == 0 ? 1f : 0f);
             float reward = players.Length > 1 ? 1f - 2f * place / (players.Length - 1) : 0f;
             entry.Value.FinishGame(reward);
         }
@@ -1101,6 +1134,8 @@ public class MapController : MonoBehaviour
     // items are moved by dragging them between the tile panel and the equipment panel
     public void ShowItems(RectTransform panel, List<Coin> coins, bool crown, bool inEquipment)
     {
+        // nobody sees the panels in training, and every board would fill the same ones
+        if (isLearning) return;
         for (int i = panel.childCount - 1; i >= 0; i--)
         {
             // inactive right away, so the new icons get their places in this frame (Destroy waits until its end)

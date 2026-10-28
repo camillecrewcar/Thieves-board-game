@@ -20,6 +20,8 @@ public class GameSettings
     // training only: rounds after which an unfinished game is scored and restarted, 0 = no limit ("-maxRounds N")
     public int roundLimit = DefaultRoundLimit;
     public const int DefaultRoundLimit = 150;
+    // training only: boards played at the same time in one game window, each with its own agents ("-areas N")
+    public int areas = 1;
 
     public static readonly string[] SpeedNames = { "Wolne", "Normalne", "Szybkie", "Bez animacji" };
     public static readonly float[] SpeedValues = { 0.5f, 1f, 2f, 0f };
@@ -48,7 +50,12 @@ public class GameSettings
     public static GameSettings DefaultTraining()
     {
         int randomSeats = Math.Max(0, Math.Min(3, CommandLineInt("-randomSeats", 0)));
-        GameSettings settings = new GameSettings { mode = GameMode.Training, roundLimit = Math.Max(0, CommandLineInt("-maxRounds", DefaultRoundLimit)) };
+        GameSettings settings = new GameSettings
+        {
+            mode = GameMode.Training,
+            roundLimit = Math.Max(0, CommandLineInt("-maxRounds", DefaultRoundLimit)),
+            areas = Math.Max(1, CommandLineInt("-areas", 1))
+        };
         foreach (int seat in SeatsFor(4))
         {
             settings.seats.Add(seat);
