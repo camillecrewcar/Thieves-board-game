@@ -5,7 +5,7 @@ using TMPro;
 
 public class Results : MonoBehaviour
 {
-    public const int CROWN_POINTS = 3;
+    public const int CROWN_POINTS = 5;
     public MapController mapController;
     private TextMeshProUGUI resultsText;
     void Start()
@@ -15,9 +15,15 @@ public class Results : MonoBehaviour
     }
 
     // only the vault counts, the equipment does not
-    public static int Score(MapController mapController, Player player, out int coinPoints, out bool crownInVault)
+    public static int Score(MapController mapController, Player player)
+    {
+        return Score(mapController, player, out _, out _, out _);
+    }
+
+    public static int Score(MapController mapController, Player player, out int coinPoints, out int artifacts, out bool crownInVault)
     {
         coinPoints = 0;
+        artifacts = 0;
         crownInVault = false;
         foreach (Vector3Int vault in player.vaultPositions)
         {
@@ -27,12 +33,13 @@ public class Results : MonoBehaviour
             {
                 coinPoints += coin.value;
             }
+            artifacts += vaultTile.artifacts.Count;
             if (vaultTile.hasCrown)
             {
                 crownInVault = true;
             }
         }
-        return coinPoints + (crownInVault ? CROWN_POINTS : 0);
+        return coinPoints + artifacts * Artifact.Points + (crownInVault ? CROWN_POINTS : 0);
     }
 
     void Update()
@@ -43,7 +50,7 @@ public class Results : MonoBehaviour
         List<string> winners = new List<string>();
         foreach (Player player in mapController.players)
         {
-            int sum = Score(mapController, player, out _, out _);
+            int sum = Score(mapController, player);
             resultsText.text += $"Wynik Gracza {player.name}: {sum}\n";
             if(sum > bestScore){
                 bestScore = sum;

@@ -69,10 +69,25 @@ public class GameHud : MonoBehaviour
     private Button dropAllButton;
     private Button swapAllButton;
 
-    // items flying between the tile panel and the equipment (the crown has no Coin, it uses its own key)
+    // items flying between the tile panel and the equipment
     const float ItemFlySeconds = 0.22f;
-    static readonly object crownKey = new object();
     private HashSet<object> itemsInFlight = new HashSet<object>();
+
+    // buttons of the artifacts and of the end of the game, shown only when they can be used
+    private Button atlasButton;
+    private TextMeshProUGUI atlasLabel;
+    private Button minecartButton;
+    private Button skipStickyButton;
+    private Button declareEndButton;
+    private TextMeshProUGUI announcement;
+    // the artifact choice at the start of the game
+    private GameObject modal;
+    public bool IsModalOpen => modal != null;
+    private Dictionary<Vector3Int, TextMeshPro> artifactLabels = new Dictionary<Vector3Int, TextMeshPro>();
+    private Dictionary<Vector3Int, SpriteRenderer> artifactMarkers = new Dictionary<Vector3Int, SpriteRenderer>();
+    private Button peekButton;
+    static readonly Color artifactColor = UiFactory.Hex("7E57C2");
+
 
     // "Koniec tury" starts to pulse when the player has done nothing for a while at the end of the turn
     const float IdleSeconds = 5f;
@@ -103,7 +118,7 @@ public class GameHud : MonoBehaviour
         new int[0], new[] { 6 }, new[] { 0, 5 }, new[] { 0, 6, 5 },
         new[] { 0, 1, 4, 5 }, new[] { 0, 1, 4, 5, 6 }, new[] { 0, 1, 2, 3, 4, 5 }
     };
-    static readonly int[] dieFaces = { 2, 3, 3, 4, 5, 6 };
+    static readonly int[] dieFaces = { 1, 2, 3, 4, 5, 6 };
     private Dictionary<Player, SpriteRenderer> pawnViews = new Dictionary<Player, SpriteRenderer>();
     private Dictionary<Player, SpriteRenderer> carriedCrowns = new Dictionary<Player, SpriteRenderer>();
 
@@ -190,6 +205,11 @@ public class GameHud : MonoBehaviour
         instruction.alignment = TextAlignmentOptions.MidlineLeft;
         instruction.enableWordWrapping = true;
         UiFactory.SetSize(instruction, -1, 64);
+        announcement = UiFactory.CreateText(column, "", 24, UiFactory.Accent);
+        announcement.alignment = TextAlignmentOptions.MidlineLeft;
+        announcement.enableWordWrapping = true;
+        announcement.fontStyle = FontStyles.Bold;
+        UiFactory.SetSize(announcement, -1, 34);
         mapController.instructionText.enabled = false;
         mapController.currentPlayerInfo.enabled = false;
 
@@ -461,9 +481,11 @@ public class GameHud : MonoBehaviour
         dieGlow.color = new Color(UiFactory.Accent.r, UiFactory.Accent.g, UiFactory.Accent.b, canRoll ? 0.4f + 0.6f * pulse : 0f);
         if (!dieAnimating && result > 0 && shownFace != result) SetFace(result);
 
+        int range = mapController.MoveRange;
+        string fields = range == 1 ? "pole" : range >= 2 && range <= 4 ? "pola" : "pól";
         if (mapController.IsRollingDice) diceCaption.text = "Rzut...";
         else if (canRoll) diceCaption.text = "Kliknij kostkę, aby rzucić";
-        else diceCaption.text = "Wyrzucono " + result + "\n<size=22><color=#AAB2C5>ruch o maks. " + result + " " + (result <= 4 ? "pola" : "pól") + "</color></size>";
+        else diceCaption.text = "Wyrzucono " + result + "\n<size=22><color=#AAB2C5>ruch o " + (mapController.ExactMove ? "dokładnie " : "maks. ") + range + " " + fields + "</color></size>";
     }
 
     static Sprite CreateDotSprite()
@@ -484,26 +506,25 @@ public class GameHud : MonoBehaviour
     }
 
     // icon button with the action's name shown above it on hover
-    public bool IsItemInFlight(Coin coin, bool crown)
+    public bool IsItemInFlight(object item)
     {
-        return itemsInFlight.Contains(crown ? crownKey : coin);
+        return itemsInFlight.Contains(item);
     }
 
     // a copy of the icon flies from where the item was to its new place, which stays empty until it lands
-    public void FlyItem(RectTransform targetPanel, Coin coin, bool crown, Vector3 from, Vector2 fromSize)
+    public void FlyItem(RectTransform targetPanel, object item, Vector3 from, Vector2 fromSize)
     {
         if (mapController.AnimationSpeed <= 0f) return;
         LayoutRebuilder.ForceRebuildLayoutImmediate(targetPanel);
-        DraggableItem target = FindItemIcon(targetPanel, coin, crown);
+        DraggableItem target = FindItemIcon(targetPanel, item);
         if (target == null) return;
         Image targetImage = target.GetComponent<Image>();
-        object key = crown ? crownKey : coin;
-        itemsInFlight.Add(key);
+        itemsInFlight.Add(item);
         targetImage.color = Color.clear;
-        StartCoroutine(Fly(key, coin, crown, targetImage.sprite, from, fromSize, target.transform.position, ((RectTransform)target.transform).rect.size));
+        StartCoroutine(Fly(item, targetImage.sprite, from, fromSize, target.transform.position, ((RectTransform)target.transform).rect.size));
     }
 
-    IEnumerator Fly(object key, Coin coin, bool crown, Sprite sprite, Vector3 from, Vector2 fromSize, Vector3 to, Vector2 toSize)
+    IEnumerator Fly(object item, Sprite sprite, Vector3 from, Vector2 fromSize, Vector3 to, Vector2 toSize)
     {
         Image flyer = UiFactory.CreatePanel(hudCanvas.transform, "Flying item", Color.white);
         flyer.sprite = sprite;
@@ -521,20 +542,20 @@ public class GameHud : MonoBehaviour
             yield return null;
         }
         Destroy(flyer.gameObject);
-        itemsInFlight.Remove(key);
+        itemsInFlight.Remove(item);
         // the panels may have been rebuilt meanwhile (or the item moved back), show it wherever it is now
         foreach (RectTransform panel in new[] { mapController.tileContentPanel, mapController.EQContentPanel })
         {
-            DraggableItem landed = FindItemIcon(panel, coin, crown);
+            DraggableItem landed = FindItemIcon(panel, item);
             if (landed != null) landed.GetComponent<Image>().color = Color.white;
         }
     }
 
-    static DraggableItem FindItemIcon(RectTransform panel, Coin coin, bool crown)
+    static DraggableItem FindItemIcon(RectTransform panel, object item)
     {
-        foreach (DraggableItem item in panel.GetComponentsInChildren<DraggableItem>())
+        foreach (DraggableItem icon in panel.GetComponentsInChildren<DraggableItem>())
         {
-            if (item.Matches(coin, crown)) return item;
+            if (icon.Matches(item)) return icon;
         }
         return null;
     }
@@ -696,6 +717,32 @@ public class GameHud : MonoBehaviour
         AddActionButton(row, mapController.finishTurnButton, "Koniec tury", UiFactory.Accent, 260);
         endGameChecker checker = FindObjectOfType<endGameChecker>();
         if (checker != null) AddActionButton(row, checker.endGameButton, "Zakończ grę!", endGameColor, 260);
+        atlasButton = CreateActionButton(row, "Rękawice Atlasa", artifactColor, 260, mapController.ToggleAtlasMode);
+        atlasLabel = atlasButton.GetComponentInChildren<TextMeshProUGUI>();
+        minecartButton = CreateActionButton(row, "Wagonetka", artifactColor, 220, mapController.MinecartClicked);
+        skipStickyButton = CreateActionButton(row, "Pomiń", UiFactory.Button, 200, mapController.SkipSticky);
+        declareEndButton = CreateActionButton(row, "Ogłoś koniec gry", endGameColor, 280, mapController.DeclareEndGameClicked);
+    }
+
+    Button CreateActionButton(Transform row, string text, Color color, float width, UnityEngine.Events.UnityAction onClick)
+    {
+        Button button = UiFactory.CreateButton(row, text, new Vector2(width, 60), onClick);
+        button.image.sprite = mapController.rollDiceButton.image.sprite;
+        button.image.type = Image.Type.Sliced;
+        button.image.color = color;
+        TextMeshProUGUI label = button.GetComponentInChildren<TextMeshProUGUI>();
+        label.fontSize = 26;
+        label.fontStyle = FontStyles.Bold;
+        label.enableAutoSizing = true;
+        label.fontSizeMin = 16;
+        label.fontSizeMax = 26;
+        button.gameObject.SetActive(false);
+        return button;
+    }
+
+    static void SetVisible(Component component, bool visible)
+    {
+        if (component.gameObject.activeSelf != visible) component.gameObject.SetActive(visible);
     }
 
     void AddActionButton(Transform row, Button button, string text, Color color, float width)
@@ -951,11 +998,11 @@ public class GameHud : MonoBehaviour
             oldCanvas.enabled = false;
         }
 
-        List<(Player player, int score, int coins, bool crown)> scores = new List<(Player, int, int, bool)>();
+        List<(Player player, int score, int coins, int artifacts, bool crown)> scores = new List<(Player, int, int, int, bool)>();
         foreach (Player player in mapController.players)
         {
-            int score = Results.Score(mapController, player, out int coins, out bool crown);
-            scores.Add((player, score, coins, crown));
+            int score = Results.Score(mapController, player, out int coins, out int artifacts, out bool crown);
+            scores.Add((player, score, coins, artifacts, crown));
         }
         scores.Sort((a, b) => b.score.CompareTo(a.score));
         int bestScore = scores[0].score;
@@ -1013,7 +1060,24 @@ public class GameHud : MonoBehaviour
             playerName.fontStyle = FontStyles.Bold;
             playerName.alignment = TextAlignmentOptions.MidlineLeft;
             UiFactory.SetSize(playerName, 220, 60);
-            string breakdown = "monety " + entry.coins + (entry.crown ? " + korona " + Results.CROWN_POINTS : "");
+            // coins grouped by value, e.g. "6×1 + 1×2 + 1×3 pkt + artefakty 1×2 pkt + korona 5 pkt"
+            int[] coinsOfValue = new int[4];
+            foreach (Vector3Int vault in entry.player.vaultPositions)
+            {
+                GameTile vaultTile = mapController.tilemap.GetTile<GameTile>(vault);
+                if (vaultTile == null) continue;
+                foreach (Coin coin in vaultTile.coins) coinsOfValue[Mathf.Clamp(coin.value, 0, 3)]++;
+            }
+            List<string> coinGroups = new List<string>();
+            for (int value = 1; value <= 3; value++)
+            {
+                if (coinsOfValue[value] > 0) coinGroups.Add(coinsOfValue[value] + "×" + value);
+            }
+            List<string> parts = new List<string>();
+            if (coinGroups.Count > 0) parts.Add(string.Join(" + ", coinGroups) + " pkt");
+            if (entry.artifacts > 0) parts.Add("artefakty " + entry.artifacts + "×" + Artifact.Points + " pkt");
+            if (entry.crown) parts.Add("korona " + Results.CROWN_POINTS + " pkt");
+            string breakdown = parts.Count > 0 ? string.Join(" + ", parts) : "pusty skarbiec";
             TextMeshProUGUI detail = UiFactory.CreateText(row.transform, breakdown, 24, UiFactory.TextMuted);
             detail.alignment = TextAlignmentOptions.MidlineLeft;
             UiFactory.SetSize(detail, -1, 60).flexibleWidth = 1;
@@ -1063,9 +1127,16 @@ public class GameHud : MonoBehaviour
         }
 
         instruction.text = current.IsHuman ? mapController.instructionText.text : "Ruch komputera, poczekaj...";
+        announcement.text = mapController.Announcement;
+        SetVisible(announcement, mapController.Announcement.Length > 0);
         UpdateDice(current);
         // the shared move code shows these buttons for every player, a computer player never needs them
         if (actionRow.activeSelf != current.IsHuman) actionRow.SetActive(current.IsHuman);
+        SetVisible(atlasButton, current.IsHuman && mapController.CanUseAtlas && !mapController.IsSelectingCells);
+        atlasLabel.text = mapController.AtlasMode ? "Zwykłe przesuwanie" : "Rękawice Atlasa";
+        SetVisible(minecartButton, current.IsHuman && mapController.CanUseMinecart);
+        SetVisible(skipStickyButton, current.IsHuman && mapController.ChoosingSticky);
+        SetVisible(declareEndButton, current.IsHuman && mapController.Phase >= 3 && mapController.CanDeclareEndGame(current));
 
         // nothing more fits in the equipment (or the theft is done): point at "Koniec tury"
         bool equipmentFull = current.IsHuman && mapController.Phase == 3 && current.HasFullEquipment;
@@ -1083,7 +1154,7 @@ public class GameHud : MonoBehaviour
         if (equipmentLabel != null && equipmentLabel.gameObject.activeSelf != showEquipment) equipmentLabel.gameObject.SetActive(showEquipment);
         if (equipmentZone != null && equipmentZone.gameObject.activeSelf != showEquipment) equipmentZone.gameObject.SetActive(showEquipment);
         Player owner = current;
-        string ownerItems = owner.Coins.Count + "|" + owner.HasCrown;
+        string ownerItems = owner.Coins.Count + "|" + owner.Artifacts.Count + "|" + owner.HasCrown;
         if (showEquipment && (owner != shownOwner || ownerItems != shownOwnerItems))
         {
             shownOwner = owner;
@@ -1095,7 +1166,7 @@ public class GameHud : MonoBehaviour
         int ownerSeat = UiFactory.SeatOf(owner);
         if (equipmentLabel != null)
         {
-            string count = ItemCount(owner) + "/" + Player.MAX_COINS;
+            string count = ItemCount(owner) + "/" + owner.Capacity;
             if (owner.HasFullEquipment) count = "<color=#FF6B6B>" + count + "</color>";
             equipmentLabel.text = "Ekwipunek gracza " + UiFactory.SeatNames[ownerSeat] + " (" + count + ")";
         }
@@ -1136,6 +1207,7 @@ public class GameHud : MonoBehaviour
         }
 
         UpdateCoinLabels();
+        UpdateArtifactLabels();
         UpdateTileInspector(current);
     }
 
@@ -1171,6 +1243,14 @@ public class GameHud : MonoBehaviour
         tileCardDetails = UiFactory.CreateText(card.transform, "", 22, UiFactory.TextMuted);
         tileCardDetails.alignment = TextAlignmentOptions.TopLeft;
         tileCardDetails.enableWordWrapping = true;
+        // Boskie Oko: shows the coin values of this field, once per turn
+        peekButton = UiFactory.CreateButton(card.transform, "Boskie Oko: podejrzyj", new Vector2(300, 48), () =>
+        {
+            if (inspectedCell.HasValue) mapController.Peek(inspectedCell.Value);
+            inspectedSignature = null;
+        });
+        peekButton.image.color = artifactColor;
+        peekButton.GetComponentInChildren<TextMeshProUGUI>().fontSize = 22;
         tileCard.gameObject.SetActive(false);
 
         inspectedFrame = new GameObject("Inspected tile").AddComponent<SpriteRenderer>();
@@ -1190,7 +1270,8 @@ public class GameHud : MonoBehaviour
         {
             CloseTileCard();
         }
-        else if (Input.GetMouseButtonDown(0))
+        // a click on the card itself (its Boskie Oko button) keeps it open
+        else if (Input.GetMouseButtonDown(0) && !(tileCard.gameObject.activeSelf && RectTransformUtility.RectangleContainsScreenPoint(tileCard, Input.mousePosition)))
         {
             Vector3 world = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3Int cell = mapController.tilemap.WorldToCell(world);
@@ -1237,13 +1318,19 @@ public class GameHud : MonoBehaviour
         GameTile tile = mapController.tilemap.GetTile<GameTile>(cell);
         int coins = tile != null && tile.coins != null ? tile.coins.Count : 0;
         bool crown = tile != null && tile.hasCrown;
+        List<Artifact> artifacts = tile != null ? tile.artifacts : new List<Artifact>();
         List<string> pawns = new List<string>();
         foreach (Player player in mapController.players)
         {
             if (player.currentPosition == cell) pawns.Add(UiFactory.SeatNames[UiFactory.SeatOf(player)]);
         }
+        Player viewer = mapController.players[mapController.CurrentPlayer];
+        bool values = mapController.CanSeeValues(viewer, cell);
+        bool canPeek = mapController.CanPeek && coins > 0 && !values;
         string title = TileKind(tile, cell);
-        string signature = title + "|" + coins + "|" + crown + "|" + string.Join(",", pawns);
+        string artifactNames = "";
+        foreach (Artifact artifact in artifacts) artifactNames += (artifact.revealed ? artifact.Number : 0) + ",";
+        string signature = title + "|" + coins + "|" + crown + "|" + artifactNames + "|" + values + "|" + canPeek + "|" + string.Join(",", pawns);
 
         // the card follows its tile and is rebuilt only when something on it changed
         PlaceTileCard(cell);
@@ -1254,23 +1341,47 @@ public class GameHud : MonoBehaviour
 
         tileCardTitle.text = title;
         for (int i = tileCardItems.childCount - 1; i >= 0; i--) Destroy(tileCardItems.GetChild(i).gameObject);
-        for (int i = 0; i < coins; i++) AddCardIcon(mapController.coinHQSprite);
-        if (crown) AddCardIcon(mapController.crownSpriteTransparent);
-        tileCardItems.gameObject.SetActive(coins > 0 || crown);
+        int coinPoints = 0;
+        if (tile != null)
+        {
+            foreach (Coin coin in tile.coins)
+            {
+                AddCardIcon(mapController.coinHQSprite, values ? coin.value.ToString() : null);
+                coinPoints += coin.value;
+            }
+        }
+        foreach (Artifact artifact in artifacts) AddCardIcon(ArtifactIcons.For(artifact), MapController.ItemLabel(artifact, false));
+        if (crown) AddCardIcon(mapController.crownSpriteTransparent, null);
+        bool any = coins > 0 || crown || artifacts.Count > 0;
+        tileCardItems.gameObject.SetActive(any);
 
-        string details = coins > 0 || crown
-            ? "Monety: " + coins + (crown ? ", korona" : "")
-            : (tile == mapController.emptyTile ? "Nie można tu stanąć." : "Brak przedmiotów.");
+        string details;
+        if (!any) details = tile == mapController.emptyTile ? "Nie można tu stanąć." : "Brak przedmiotów.";
+        else
+        {
+            details = "Monety: " + coins + (values && coins > 0 ? " (razem " + coinPoints + " pkt)" : "");
+            if (crown) details += ", korona";
+            foreach (Artifact artifact in artifacts)
+            {
+                details += artifact.revealed ? "\n<color=#D1C4E9>" + artifact.Number + ". " + artifact.Name + "</color> - " + artifact.Description : "\nZakryty artefakt";
+            }
+        }
         if (pawns.Count > 0) details += "\nGracze: " + string.Join(", ", pawns);
         tileCardDetails.text = details;
+        peekButton.gameObject.SetActive(canPeek);
         tileCard.gameObject.SetActive(true);
     }
 
-    void AddCardIcon(Sprite sprite)
+    void AddCardIcon(Sprite sprite, string label)
     {
         Image icon = UiFactory.CreatePanel(tileCardItems, "Item", Color.white);
         icon.sprite = sprite;
         icon.preserveAspect = true;
+        if (label == null) return;
+        // white on the purple artifact card, dark on the gold coin
+        TextMeshProUGUI text = UiFactory.CreateText(icon.transform, label, 26, sprite == mapController.coinHQSprite ? UiFactory.AccentText : Color.white);
+        UiFactory.Stretch(text.rectTransform);
+        text.fontStyle = FontStyles.Bold;
     }
 
     string TileKind(GameTile tile, Vector3Int cell)
@@ -1302,7 +1413,8 @@ public class GameHud : MonoBehaviour
 
     void LateUpdate()
     {
-        if (!hudCanvas.activeSelf)
+        // nobody is on turn yet while the artifacts are chosen
+        if (!hudCanvas.activeSelf || mapController.CurrentPlayer < 0)
         {
             HideSlideHints(0);
             return;
@@ -1344,7 +1456,10 @@ public class GameHud : MonoBehaviour
                 for (int y = 0; y < 9; y++)
                 {
                     Vector3Int cell = new Vector3Int(x, y, 0);
-                    if (!mapController.CanSlideTile(cell)) continue;
+                    bool movable = mapController.AtlasMode
+                        ? mapController.tilemap.GetTile<GameTile>(cell) is GameTile tile && tile.isMovable && !mapController.IsSelectingCells
+                        : mapController.CanSlideTile(cell);
+                    if (!movable) continue;
                     SpriteRenderer hint = SlideHint(used++);
                     hint.transform.localPosition = mapController.tilemap.GetCellCenterLocal(cell);
                     hint.color = color;
@@ -1408,22 +1523,143 @@ public class GameHud : MonoBehaviour
         int filledVaults = 0;
         int vaultCoins = 0;
         bool crownInVault = false;
+        List<string> working = new List<string>();
         foreach (Vector3Int vault in player.vaultPositions)
         {
             GameTile tile = mapController.tilemap.GetTile<GameTile>(vault);
             if (tile == null) continue;
-            if (tile.coins.Count > 0 || tile.hasCrown) filledVaults++;
+            if (tile.HasItems) filledVaults++;
             if (tile.hasCrown) crownInVault = true;
             vaultCoins += tile.coins.Count;
+            foreach (Artifact artifact in tile.artifacts) working.Add(artifact.Name);
         }
         // the vault has no limit: show how many coins are in it, and how many of its fields are taken
         // (all of them are needed to end the game)
-        string status = "Ekw. " + ItemCount(player) + "/" + Player.MAX_COINS
+        string status = "Ekw. " + ItemCount(player) + "/" + player.Capacity
             + "   Skarbiec: " + vaultCoins + " " + CoinWord(vaultCoins)
             + " (pola " + filledVaults + "/" + player.vaultPositions.Length + ")";
         if (player.HasCrown) status += "   <color=#F5B921>niesie koronę</color>";
         else if (crownInVault) status += "   <color=#F5B921>korona w skarbcu</color>";
+        if (player.Artifacts.Count > 0) status += "   niesie artefakty: " + player.Artifacts.Count;
+        if (working.Count > 0) status += "   <color=#D1C4E9>" + string.Join(", ", working) + "</color>";
         return status;
+    }
+
+    // a small artifact card in the upper right corner of every field with artifacts (its picture once revealed),
+    // with the count when there are more
+    void UpdateArtifactLabels()
+    {
+        float cellLocal = mapController.tilemap.layoutGrid.cellSize.x;
+        for (int x = 0; x < 9; x++)
+        {
+            for (int y = 0; y < 9; y++)
+            {
+                Vector3Int cell = new Vector3Int(x, y, 0);
+                GameTile tile = mapController.tilemap.GetTile<GameTile>(cell);
+                int count = tile != null ? tile.artifacts.Count : 0;
+                // a tile that is still sliding there carries its own items
+                if (mapController.Animator != null && mapController.Animator.IsHidden(cell)) count = 0;
+                artifactMarkers.TryGetValue(cell, out SpriteRenderer marker);
+                artifactLabels.TryGetValue(cell, out TextMeshPro label);
+                if (count == 0)
+                {
+                    if (marker != null) marker.enabled = false;
+                    if (label != null) label.gameObject.SetActive(false);
+                    continue;
+                }
+                if (marker == null)
+                {
+                    marker = new GameObject("Artifact " + cell).AddComponent<SpriteRenderer>();
+                    // a child of the tilemap, so it has the same scale as the tiles
+                    marker.transform.SetParent(mapController.tilemap.transform, false);
+                    marker.transform.localPosition = mapController.tilemap.GetCellCenterLocal(cell) + new Vector3(0.27f, 0.27f, 0f) * cellLocal;
+                    marker.transform.localScale = Vector3.one * 0.42f * cellLocal;
+                    marker.sortingLayerID = boardSortingLayer;
+                    marker.sortingOrder = OrderLabels;
+                    artifactMarkers[cell] = marker;
+                }
+                marker.enabled = true;
+                marker.sprite = ArtifactIcons.For(tile.artifacts[0]);
+                if (count == 1)
+                {
+                    if (label != null) label.gameObject.SetActive(false);
+                    continue;
+                }
+                if (label == null)
+                {
+                    label = CreateCoinLabel(cell);
+                    label.transform.position = mapController.tilemap.GetCellCenterWorld(cell) + new Vector3(0.3f, 0.08f, 0f) * cellSize;
+                    artifactLabels[cell] = label;
+                }
+                label.gameObject.SetActive(true);
+                string text = "×" + count;
+                if (label.text != text) label.text = text;
+            }
+        }
+    }
+
+    // ---------- the artifact choice at the start ----------
+
+    // the offered artifact cards (three), the human player keeps one
+    public IEnumerator ChooseArtifact(Player player, List<Artifact> offered, System.Action<Artifact> chosen)
+    {
+        Artifact kept = null;
+        modal = UiFactory.CreateCanvas("ArtifactChoiceCanvas", 18);
+        Image backdrop = UiFactory.CreatePanel(modal.transform, "Backdrop", new Color(0f, 0f, 0f, 0.75f));
+        UiFactory.Stretch(backdrop.rectTransform);
+        backdrop.raycastTarget = true;
+
+        RectTransform column = UiFactory.CreateRect("Column", backdrop.transform);
+        column.anchorMin = column.anchorMax = new Vector2(0.5f, 0.5f);
+        column.sizeDelta = new Vector2(1600, 640);
+        VerticalLayoutGroup layout = column.gameObject.AddComponent<VerticalLayoutGroup>();
+        layout.spacing = 24;
+        layout.childAlignment = TextAnchor.MiddleCenter;
+        layout.childControlWidth = true;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+
+        int seat = UiFactory.SeatOf(player);
+        TextMeshProUGUI title = UiFactory.CreateText(column, "Gracz " + UiFactory.SeatNames[seat] + ": wybierz artefakt", 48, UiFactory.SeatColors[seat]);
+        title.fontStyle = FontStyles.Bold;
+        UiFactory.SetSize(title, -1, 70);
+        TextMeshProUGUI hint = UiFactory.CreateText(column, "Wybrany artefakt trafi zakryty na planszę. Działa tylko w skarbcu i jest wart " + Artifact.Points + " pkt.", 24, UiFactory.TextMuted);
+        hint.enableWordWrapping = true;
+        UiFactory.SetSize(hint, -1, 40);
+
+        RectTransform cards = UiFactory.CreateRow(column, 420, 40);
+        foreach (Artifact artifact in offered)
+        {
+            Artifact option = artifact;
+            Button card = UiFactory.CreateButton(cards, "", new Vector2(480, 420), () => kept = option);
+            card.image.color = UiFactory.Panel;
+            Destroy(card.GetComponentInChildren<TextMeshProUGUI>().gameObject);
+            VerticalLayoutGroup cardLayout = card.gameObject.AddComponent<VerticalLayoutGroup>();
+            cardLayout.padding = new RectOffset(28, 28, 24, 24);
+            cardLayout.spacing = 14;
+            cardLayout.childAlignment = TextAnchor.UpperCenter;
+            cardLayout.childControlWidth = true;
+            cardLayout.childControlHeight = true;
+            cardLayout.childForceExpandWidth = true;
+            cardLayout.childForceExpandHeight = false;
+
+            Image icon = UiFactory.CreatePanel(card.transform, "Icon", Color.white);
+            icon.sprite = ArtifactIcons.Icon(option.type);
+            icon.preserveAspect = true;
+            UiFactory.SetSize(icon, -1, 130);
+            TextMeshProUGUI name = UiFactory.CreateText(card.transform, option.Number + ". " + option.Name, 36, UiFactory.Accent);
+            name.fontStyle = FontStyles.Bold;
+            UiFactory.SetSize(name, -1, 50);
+            TextMeshProUGUI description = UiFactory.CreateText(card.transform, option.Description, 24, Color.white);
+            description.enableWordWrapping = true;
+            UiFactory.SetSize(description, -1, 190);
+        }
+
+        while (kept == null) yield return null;
+        Destroy(modal);
+        modal = null;
+        chosen(kept);
     }
 
     // Polish plural: 1 moneta, 2-4 monety, 5+ monet (but 12-14 monet, 22-24 monety)

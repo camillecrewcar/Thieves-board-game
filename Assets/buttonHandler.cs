@@ -54,55 +54,23 @@ public class ButtonHandler : MonoBehaviour
         mapController.tileContentPanel.gameObject.SetActive(true);
         //mapController.newTurn();
     }
+    // declining the theft: the ladder may still be taken, otherwise the items
     public void StayHere()
     {
-        mapController.LastSelectedTilePos = new Vector3Int(-1, -1, -1);
-        mapController.finishTurnButton.gameObject.SetActive(true);
-        mapController.EQContentPanel.gameObject.SetActive(true);
-        mapController.tileContentPanel.gameObject.SetActive(true);
-        mapController.Phase = 3;
-        mapController.instructionText.text = MapController.ManageEquipmentInstruction;
-        mapController.stayHereButton.gameObject.SetActive(false);
-        mapController.goCenterButton.gameObject.SetActive(false);
-        if (mapController.stealButton.gameObject.activeSelf){
-            if(mapController.CanUseLadder(mapController.players[mapController.CurrentPlayer])){
-                mapController.stealButton.gameObject.SetActive(false);
-                mapController.tileContentPanel.gameObject.SetActive(false);
-                mapController.EQContentPanel.gameObject.SetActive(false);
-                mapController.stayHereButton.gameObject.SetActive(true);
-                mapController.goCenterButton.gameObject.SetActive(true);
-                mapController.Phase = 2;
-            }
-
-        }
+        Player current = mapController.players[mapController.CurrentPlayer];
+        bool declinedTheft = mapController.stealButton.gameObject.activeSelf;
         mapController.stealButton.gameObject.SetActive(false);
+        if (declinedTheft && mapController.CanUseLadder(current))
+        {
+            mapController.OfferLadder();
+            return;
+        }
+        mapController.StartItemStep();
     }
     
     public void MoveToCenter()
     {
-        mapController.goCenterButton.gameObject.SetActive(false);
-        mapController.UseLadder();
-
-        if (mapController.FindStealablePlayers().Count > 0)
-        {
-            mapController.tileContentPanel.gameObject.SetActive(false);
-            mapController.EQContentPanel.gameObject.SetActive(false);
-            mapController.stayHereButton.gameObject.SetActive(true);
-            mapController.stealButton.gameObject.SetActive(true);
-            mapController.Phase = 2;
-            return;
-        }
-        mapController.LastSelectedTilePos = new Vector3Int(-1, -1, -1);
-        
-        mapController.finishTurnButton.gameObject.SetActive(true);
-        mapController.EQContentPanel.gameObject.SetActive(true);
-        mapController.tileContentPanel.gameObject.SetActive(true);
-        mapController.Phase = 3;
-        mapController.instructionText.text = MapController.ManageEquipmentInstruction;
-        mapController.stayHereButton.gameObject.SetActive(false);
-        mapController.stealButton.gameObject.SetActive(false);
-
-        mapController.goCenterButton.gameObject.SetActive(false);
+        mapController.LadderClicked();
     }
     public void FinishGame(){
         endGamePanel.gameObject.SetActive(true);

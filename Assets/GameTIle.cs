@@ -11,6 +11,8 @@ public class GameTile : TileBase
     [System.NonSerialized]
     private List<Coin> _coins = new List<Coin>();
     [System.NonSerialized]
+    private List<Artifact> _artifacts = new List<Artifact>();
+    [System.NonSerialized]
     public Vector3Int currentPosition;
     public bool hasCrown = false;
 
@@ -22,6 +24,14 @@ public class GameTile : TileBase
             _coins = value;
         }
     }
+
+    public List<Artifact> artifacts
+    {
+        get { return _artifacts ?? (_artifacts = new List<Artifact>()); }
+        set { _artifacts = value; }
+    }
+
+    public bool HasItems => coins.Count > 0 || artifacts.Count > 0 || hasCrown;
 
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
     {
@@ -39,6 +49,7 @@ public class GameTile : TileBase
         newTile.isMovable = this.isMovable;
         newTile.playerIndex = this.playerIndex;
         newTile.coins = new List<Coin>(this.coins);
+        newTile.artifacts = new List<Artifact>(this.artifacts);
         newTile.currentPosition = this.currentPosition;
         newTile.hasCrown = this.hasCrown;
         return newTile;

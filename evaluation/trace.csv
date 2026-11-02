@@ -1,0 +1,4 @@
+game,rounds,hit_limit,declarer,side0,score0,artifacts0,side1,score1,artifacts1,side2,score2,artifacts2,side3,score3,artifacts3
+1,14,0,A,A,17,1,R,0,0,A,14,2,R,0,0
+2,201,1,-,R,0,0,A,5,0,R,2,0,A,1,0
+3,16,0,A,A,16,2,R,0,0,A,13,0,R,0,0

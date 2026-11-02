@@ -75,9 +75,8 @@ public class ItemDropZone : MonoBehaviour, IDropHandler, IPointerEnterHandler, I
 
     bool WouldRefuse()
     {
-        // the crown needs all three slots, a coin one
-        DraggableItem dragged = DraggableItem.Dragged;
-        return isEquipment && dragged != null && !mapController.players[mapController.CurrentPlayer].HasRoomFor(dragged.IsCrown);
+        // every item takes one slot
+        return isEquipment && DraggableItem.Dragged != null && !mapController.players[mapController.CurrentPlayer].HasRoom;
     }
 
     public void OnPointerEnter(PointerEventData eventData)

@@ -9,60 +9,71 @@ using UnityEngine;
 
 // One model for the whole turn of a computer player ("Komputer (AI)").
 // Every seat played by the AI gets its own ThiefAgent, all of them share the "Thief" behaviour (one trained model).
-// MapController asks for one decision at a time (Decide); the decision kind decides which actions are allowed (masking).
+// MapController asks for one decision at a time (Decide) and passes the allowed actions (masking).
 // Observations always have the same size: the whole board plus the state of the player and the opponents.
+// Every agent sees the board mirrored so that its own vault is in the top-left corner (the board is mirror-symmetric),
+// and its field and slide actions are mirrored back: one skill for every seat.
 public class ThiefAgent : Agent
 {
     public const string BehaviorName = "Thief";
     // trained model, loaded from Assets/Resources/Brains/Thief.onnx when it exists
     public const string ModelResource = "Brains/Thief";
 
-    public enum Decision { Slide, Move, Steal, Ladder, Items, EndGame }
+    public enum Decision { ChooseArtifact, Slide, AtlasTarget, Minecart, Move, Sticky, Steal, Ladder, Items, EndGame, Peek }
+    const int DecisionKinds = 11;
 
     // ---------- actions (one discrete branch) ----------
     // slide: (cell index * 4 + direction), cell index = y * 9 + x, directions: up, right, down, left
     public const int SlideBase = 0;
     public const int StopSliding = 324;
-    // move: the target cell
-    public const int MoveBase = 325;
-    // steal: opponent slot * 2 + (0 = a coin, 1 = the crown)
+    // a field of the board: where to go, which tile to take with the gloves and where to put it, the minecart's target,
+    // the field for the sticky fingers, the end of the ladder, the field to look at with Boskie Oko
+    public const int CellBase = 325;
+    // steal: opponent slot * 3 + (0 = a coin, 1 = an artifact, 2 = the crown)
     public const int StealBase = 406;
-    public const int NoSteal = 412;
-    public const int LadderYes = 413, LadderNo = 414;
-    public const int PickCoin = 415, PickCrown = 416, DropCoin = 417, DropCrown = 418, ItemsDone = 419;
-    public const int EndGameYes = 420, EndGameNo = 421;
-    public const int ActionCount = 422;
+    public const int NoSteal = 415;
+    public const int Yes = 416, No = 417;
+    public const int PickCoin = 418, PickArtifact = 419, PickCrown = 420, DropCoin = 421, DropArtifact = 422, DropCrown = 423, ItemsDone = 424;
+    // keep the artifact of this number (1-12) at the start of the game
+    public const int ChooseArtifactBase = 425;
+    public const int ActionCount = ChooseArtifactBase + Artifact.Count;
 
     public static readonly Vector3Int[] SlideDirections = { Vector3Int.up, Vector3Int.right, Vector3Int.down, Vector3Int.left };
 
     // ---------- observations ----------
-    // per cell: empty, fixed, movable, my vault, other vault, coins, crown, my pawn, opponent pawns, reachable now
-    const int CellChannels = 10;
-    const int OpponentSlots = 3;
-    const int OpponentValues = 8;
-    const int GlobalValues = 6 + 1 + 1 + 1 + 3 + 3 + 2 + 2 + 1 + 1 + OpponentSlots * OpponentValues;
+    // per cell: empty, fixed, movable, my vault, other vault, coins, crown, artifacts, my pawn, opponent pawns, can be chosen now,
+    // points of the coins when they may be seen (Zaginiony dokument, Boskie Oko)
+    const int CellChannels = 12;
+    public const int OpponentSlots = 3;
+    const int OpponentValues = 11;
+    const int GlobalValues = DecisionKinds + 3 + 2 + 5 + 4 + Artifact.Count + 6 + Artifact.Count + OpponentSlots * OpponentValues;
     public const int ObservationSize = 81 * CellChannels + GlobalValues;
 
     // rewards: placement at the end of the game (1st +1 ... last -1), and on the way the change of a "progress"
-    // potential: points in the own vault, items carried, and carried items far from home count a little against.
+    // potential: points in the own vault, items carried, and a little against: carried items far from home and,
+    // with free slots, being far from items (both walked through the labyrinth).
     // Only the change is rewarded, so picking a coin up and dropping it again earns nothing.
     const float VaultRewardPerPoint = 0.05f;
     const float CarryRewardPerSlot = 0.02f;
-    const float CarryDistancePenalty = 0.002f;
+    const float CarryDistancePenalty = 0.005f;
+    // with free slots: steps to the nearest items to take
+    const float ItemDistancePenalty = 0.003f;
     // progress toward being allowed to end the game: every filled vault field, and the crown in the vault
     const float VaultFieldReward = 0.1f;
     const float CrownInVaultReward = 0.2f;
-    // ending the game is a bet: rewarded when the player leads, punished when it does not
+    // announcing the end is a bet: rewarded when the player leads, punished when it does not
     const float EndingBetReward = 0.5f;
     // taking items back out of the own vault: punished once, dropping them back does not undo it
     const float VaultPickPenalty = 0.2f;
 
     public Decision Kind { get; private set; }
-    public bool CanStopSliding { get; private set; }
     public int LastAction { get; private set; }
 
     private MapController map;
     private Player player;
+    // allowed actions as the agent sees them (mirrored)
+    private bool[] allowed = new bool[ActionCount];
+    private bool flipX, flipY;
     private bool waitingForAction;
     private float lastPotential;
     private bool warnedObservationSize;
@@ -85,16 +96,20 @@ public class ThiefAgent : Agent
         ThiefAgent agent = agentObject.AddComponent<ThiefAgent>();
         agent.map = map;
         agent.player = player;
+        Vector3Int corner = player.vaultPositions[1];
+        agent.flipX = corner.x > MapController.Center.x;
+        agent.flipY = corner.y < MapController.Center.y;
         agentObject.SetActive(true);
         return agent;
     }
 
     // ---------- talking to MapController ----------
 
-    public IEnumerator Decide(Decision kind, bool canStopSliding = false)
+    public IEnumerator Decide(Decision kind, bool[] options)
     {
         Kind = kind;
-        CanStopSliding = canStopSliding;
+        allowed = new bool[ActionCount];
+        for (int i = 0; i < ActionCount; i++) allowed[Mirror(i)] = options[i];
         RewardVaultChange();
         waitingForAction = true;
         RequestDecision();
@@ -127,16 +142,23 @@ public class ThiefAgent : Agent
 
     float Potential()
     {
-        int vaultScore = Results.Score(map, player, out _, out _);
+        int vaultScore = Results.Score(map, player);
         int carried = player.UsedSlots;
-        int distanceHome = int.MaxValue;
-        foreach (Vector3Int vault in player.vaultPositions)
-        {
-            distanceHome = Mathf.Min(distanceHome, Mathf.Abs(vault.x - player.currentPosition.x) + Mathf.Abs(vault.y - player.currentPosition.y));
-        }
-        VaultState(player, out _, out int filledFields, out bool crownInVault);
+        // distances are walked on the current labyrinth, so a labyrinth move that opens the way is worth something
+        int distanceHome = carried > 0 ? map.WalkingDistance(player, player.IsVault) : 0;
+        int distanceToItems = player.HasRoom ? map.WalkingDistance(player, IsItemToTake) : 0;
+        VaultState(player, out _, out _, out int filledFields, out bool crownInVault);
         return VaultRewardPerPoint * vaultScore + CarryRewardPerSlot * carried - CarryDistancePenalty * carried * distanceHome
+            - ItemDistancePenalty * distanceToItems
             + VaultFieldReward * filledFields + (crownInVault ? CrownInVaultReward : 0f);
+    }
+
+    // items lying outside the own vault; the crown's field is reached by the ladder, not on foot
+    bool IsItemToTake(Vector3Int cell)
+    {
+        if (cell == MapController.Center || player.IsVault(cell)) return false;
+        GameTile tile = map.TileAt(cell);
+        return tile != null && tile.HasItems;
     }
 
     public void RewardEndingDecision(bool leading)
@@ -147,9 +169,10 @@ public class ThiefAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        LastAction = actions.DiscreteActions[0];
+        LastAction = Mirror(actions.DiscreteActions[0]);
         waitingForAction = false;
-        if ((LastAction == PickCoin || LastAction == PickCrown) && System.Array.IndexOf(player.vaultPositions, player.currentPosition) >= 0)
+        bool picking = LastAction == PickCoin || LastAction == PickArtifact || LastAction == PickCrown;
+        if (Kind == Decision.Items && picking && player.IsVault(player.currentPosition))
         {
             AddReward(-VaultPickPenalty);
             vaultPicks++;
@@ -159,106 +182,27 @@ public class ThiefAgent : Agent
     // used without a trained model: a random legal choice
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        List<int> valid = new List<int>();
-        bool[] allowed = AllowedActions();
-        for (int i = 0; i < allowed.Length; i++)
-        {
-            if (allowed[i]) valid.Add(i);
-        }
         ActionSegment<int> discrete = actionsOut.DiscreteActions;
-        discrete[0] = valid.Count > 0 ? valid[Random.Range(0, valid.Count)] : ItemsDone;
+        discrete[0] = RandomAllowed(allowed, null);
+    }
+
+    public static int RandomAllowed(bool[] options, System.Random random)
+    {
+        List<int> valid = new List<int>();
+        for (int i = 0; i < options.Length; i++)
+        {
+            if (options[i]) valid.Add(i);
+        }
+        if (valid.Count == 0) return ItemsDone;
+        return valid[random != null ? random.Next(0, valid.Count) : Random.Range(0, valid.Count)];
     }
 
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        bool[] allowed = AllowedActions();
-        for (int i = 0; i < allowed.Length; i++)
+        for (int i = 0; i < ActionCount; i++)
         {
             actionMask.SetActionEnabled(0, i, allowed[i]);
         }
-    }
-
-    // ---------- what is allowed for the current decision ----------
-
-    public bool HasValidSlide()
-    {
-        for (int index = 0; index < 81; index++)
-        {
-            foreach (Vector3Int direction in SlideDirections)
-            {
-                if (CanSlide(CellOf(index), direction)) return true;
-            }
-        }
-        return false;
-    }
-
-    bool CanSlide(Vector3Int cell, Vector3Int direction)
-    {
-        GameTile tile = map.tilemap.GetTile<GameTile>(cell);
-        return tile != null && tile.isMovable && map.CanSlideInDirection(cell, direction);
-    }
-
-    bool[] AllowedActions()
-    {
-        bool[] allowed = new bool[ActionCount];
-        Player me = player;
-        GameTile here = map.tilemap.GetTile<GameTile>(me.currentPosition);
-        switch (Kind)
-        {
-            case Decision.Slide:
-                for (int index = 0; index < 81; index++)
-                {
-                    for (int d = 0; d < SlideDirections.Length; d++)
-                    {
-                        allowed[SlideBase + index * 4 + d] = CanSlide(CellOf(index), SlideDirections[d]);
-                    }
-                }
-                allowed[StopSliding] = CanStopSliding;
-                break;
-            case Decision.Move:
-                foreach (Vector3Int cell in map.possibleMoves)
-                {
-                    allowed[MoveBase + IndexOf(cell)] = true;
-                }
-                // the own tile is always a legal move (staying)
-                allowed[MoveBase + IndexOf(me.currentPosition)] = true;
-                break;
-            case Decision.Steal:
-                for (int slot = 0; slot < OpponentSlots; slot++)
-                {
-                    Player victim = Opponent(slot);
-                    if (victim == null || victim.currentPosition != me.currentPosition) continue;
-                    allowed[StealBase + slot * 2] = victim.Coins.Count > 0 && me.HasRoomFor(false);
-                    allowed[StealBase + slot * 2 + 1] = victim.HasCrown && me.HasRoomFor(true);
-                }
-                allowed[NoSteal] = true;
-                break;
-            case Decision.Ladder:
-                allowed[LadderYes] = true;
-                allowed[LadderNo] = true;
-                break;
-            case Decision.Items:
-                allowed[PickCoin] = here.coins.Count > 0 && me.HasRoomFor(false);
-                allowed[PickCrown] = here.hasCrown && me.HasRoomFor(true);
-                allowed[DropCoin] = me.Coins.Count > 0;
-                allowed[DropCrown] = me.HasCrown;
-                allowed[ItemsDone] = true;
-                break;
-            case Decision.EndGame:
-                allowed[EndGameYes] = true;
-                allowed[EndGameNo] = true;
-                break;
-        }
-        return allowed;
-    }
-
-    // opponents in turn order after this player, so slot 0 is always the next one to play
-    public Player Opponent(int slot)
-    {
-        int count = map.players.Length;
-        if (slot >= count - 1) return null;
-        int me = map.IndexOfPlayer(player);
-        return map.players[(me + 1 + slot) % count];
     }
 
     public static Vector3Int CellOf(int index)
@@ -266,9 +210,29 @@ public class ThiefAgent : Agent
         return new Vector3Int(index % 9, index / 9, 0);
     }
 
-    static int IndexOf(Vector3Int cell)
+    public static int IndexOf(Vector3Int cell)
     {
         return cell.y * 9 + cell.x;
+    }
+
+    // the board seen by this agent and back (mirroring twice gives the original)
+    Vector3Int Mirror(Vector3Int cell)
+    {
+        return new Vector3Int(flipX ? 8 - cell.x : cell.x, flipY ? 8 - cell.y : cell.y, 0);
+    }
+
+    int Mirror(int action)
+    {
+        if (action >= SlideBase && action < StopSliding)
+        {
+            int direction = (action - SlideBase) % 4;
+            // up/down (0, 2) swap with flipY, right/left (1, 3) with flipX
+            if (flipY && direction % 2 == 0) direction = 2 - direction;
+            if (flipX && direction % 2 == 1) direction = 4 - direction;
+            return SlideBase + IndexOf(Mirror(CellOf((action - SlideBase) / 4))) * 4 + direction;
+        }
+        if (action >= CellBase && action < CellBase + 81) return CellBase + IndexOf(Mirror(CellOf(action - CellBase)));
+        return action;
     }
 
     public static void DecodeSlide(int action, out Vector3Int cell, out Vector3Int direction)
@@ -289,7 +253,6 @@ public class ThiefAgent : Agent
         }
 
         Player me = player;
-        HashSet<Vector3Int> reachable = Kind == Decision.Move ? new HashSet<Vector3Int>(map.possibleMoves) : new HashSet<Vector3Int>();
         HashSet<Vector3Int> myVault = new HashSet<Vector3Int>(me.vaultPositions);
         HashSet<Vector3Int> otherVaults = new HashSet<Vector3Int>();
         foreach (Player other in map.players)
@@ -299,9 +262,9 @@ public class ThiefAgent : Agent
 
         for (int index = 0; index < 81; index++)
         {
-            Vector3Int cell = CellOf(index);
-            GameTile tile = map.tilemap.GetTile<GameTile>(cell);
-            bool empty = tile == null || tile == map.emptyTile;
+            Vector3Int cell = Mirror(CellOf(index));
+            GameTile tile = map.TileAt(cell);
+            bool empty = map.IsEmptyCell(cell);
             bool vaultOfMine = myVault.Contains(cell);
             bool vaultOfOther = otherVaults.Contains(cell);
             Add(empty ? 1 : 0);
@@ -311,6 +274,7 @@ public class ThiefAgent : Agent
             Add(vaultOfOther ? 1 : 0);
             Add(empty ? 0 : tile.coins.Count / 10f);
             Add(!empty && tile.hasCrown ? 1 : 0);
+            Add(empty ? 0 : tile.artifacts.Count / 2f);
             int opponentsHere = 0;
             foreach (Player other in map.players)
             {
@@ -318,51 +282,76 @@ public class ThiefAgent : Agent
             }
             Add(me.currentPosition == cell ? 1 : 0);
             Add(opponentsHere / 3f);
-            Add(reachable.Contains(cell) ? 1 : 0);
+            // the field (or, while sliding, a slide of the tile on it) is one of the allowed choices now
+            bool choosable = allowed[CellBase + index];
+            for (int d = 0; d < 4 && !choosable && Kind == Decision.Slide; d++) choosable = allowed[SlideBase + index * 4 + d];
+            Add(choosable ? 1 : 0);
+            int points = 0;
+            if (!empty && map.CanSeeValues(me, cell))
+            {
+                foreach (Coin coin in tile.coins) points += coin.value;
+            }
+            Add(points / 10f);
         }
 
-        for (int k = 0; k < 6; k++) Add((int)Kind == k ? 1 : 0);
+        for (int k = 0; k < DecisionKinds; k++) Add((int)Kind == k ? 1 : 0);
         Add(map.resultOfLastDiceRoll / 6f);
+        Add(map.MoveRange / 7f);
+        Add(map.ExactMove ? 1 : 0);
         Add(map.TileMovesLeft / (float)MapController.CrownTileMoves);
-        Add(CanStopSliding ? 1 : 0);
+        Add(allowed[StopSliding] ? 1 : 0);
 
-        Add(me.Coins.Count / 3f);
+        Add(me.Coins.Count / 4f);
+        Add(me.Artifacts.Count / 4f);
         Add(me.HasCrown ? 1 : 0);
-        Add(me.UsedSlots / (float)Player.MAX_COINS);
+        Add(me.UsedSlots / 4f);
+        Add(me.Capacity > Player.MAX_COINS ? 1 : 0);
 
-        VaultState(me, out int vaultCoins, out int vaultFields, out bool crownInVault);
+        VaultState(me, out int vaultCoins, out int vaultArtifacts, out int vaultFields, out bool crownInVault);
         Add(vaultCoins / 20f);
+        Add(vaultArtifacts / 4f);
         Add(vaultFields / 3f);
         Add(crownInVault ? 1 : 0);
 
-        Add(me.currentPosition.x / 8f);
-        Add(me.currentPosition.y / 8f);
-
-        GameTile under = map.tilemap.GetTile<GameTile>(me.currentPosition);
-        Add(under != null ? under.coins.Count / 10f : 0);
-        Add(under != null && under.hasCrown ? 1 : 0);
+        // artifacts working for me (lying in my vault)
+        for (int type = 1; type <= Artifact.Count; type++) Add(map.HasArtifactEffect(me, (ArtifactType)type) ? 1 : 0);
 
         Add(map.CanDeclareEndGame(me) ? 1 : 0);
+        Add(map.IsFinalRound ? 1 : 0);
+        Add(map.EndDeclaredBy == me ? 1 : 0);
         Add(Mathf.Clamp01(map.Round / (float)MapController.MaxTrainingRounds));
+        Add(map.PoltergeistActive ? 1 : 0);
+        Add(me.turnsToSkip > 0 ? 1 : 0);
+
+        // the two artifacts to choose from at the start of the game
+        for (int type = 1; type <= Artifact.Count; type++)
+        {
+            bool offered = false;
+            foreach (Artifact artifact in map.OfferedArtifacts) offered |= artifact.Number == type;
+            Add(offered ? 1 : 0);
+        }
 
         for (int slot = 0; slot < OpponentSlots; slot++)
         {
-            Player other = Opponent(slot);
+            Player other = map.Opponent(me, slot);
             if (other == null)
             {
                 for (int k = 0; k < OpponentValues; k++) Add(0);
                 continue;
             }
-            VaultState(other, out int otherCoins, out int otherFields, out bool otherCrown);
+            VaultState(other, out int otherCoins, out int otherArtifacts, out int otherFields, out bool otherCrown);
             int distance = Mathf.Abs(other.currentPosition.x - me.currentPosition.x) + Mathf.Abs(other.currentPosition.y - me.currentPosition.y);
             Add(1);
-            Add(other.Coins.Count / 3f);
+            Add(other.Coins.Count / 4f);
+            Add(other.Artifacts.Count / 4f);
             Add(other.HasCrown ? 1 : 0);
             Add(otherCoins / 20f);
+            Add(otherArtifacts / 4f);
             Add(otherFields / 3f);
             Add(otherCrown ? 1 : 0);
             Add(distance / 16f);
             Add(other.currentPosition == me.currentPosition ? 1 : 0);
+            Add(map.CanDeclareEndGame(other) ? 1 : 0);
         }
 
         if (written != ObservationSize && !warnedObservationSize)
@@ -372,18 +361,20 @@ public class ThiefAgent : Agent
         }
     }
 
-    // coins (count only, their values are hidden), filled fields and the crown in a player's vault
-    void VaultState(Player owner, out int coins, out int fields, out bool crown)
+    // coins (count only, their values are hidden), artifacts, filled fields and the crown in a player's vault
+    void VaultState(Player owner, out int coins, out int artifacts, out int fields, out bool crown)
     {
         coins = 0;
+        artifacts = 0;
         fields = 0;
         crown = false;
         foreach (Vector3Int cell in owner.vaultPositions)
         {
-            GameTile tile = map.tilemap.GetTile<GameTile>(cell);
+            GameTile tile = map.TileAt(cell);
             if (tile == null) continue;
             coins += tile.coins.Count;
-            if (tile.coins.Count > 0 || tile.hasCrown) fields++;
+            artifacts += tile.artifacts.Count;
+            if (tile.HasItems) fields++;
             if (tile.hasCrown) crown = true;
         }
     }

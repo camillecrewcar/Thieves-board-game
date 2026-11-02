@@ -33,7 +33,7 @@ public class MainMenu : MonoBehaviour
     private GameObject speedRow;
     private Button[] speedButtons = new Button[GameSettings.SpeedNames.Length];
     // static, so the choice is kept when the menu is opened again
-    private static int speedIndex = 1;
+    private static int speedIndex = GameSettings.DefaultSpeedIndex;
 
     public static void Show(MapController mapController)
     {
@@ -108,8 +108,8 @@ public class MainMenu : MonoBehaviour
 
         RectTransform speed = UiFactory.CreateRow(column, 64, 12);
         speedRow = speed.gameObject;
-        TextMeshProUGUI speedLabel = UiFactory.CreateText(speed, "Tempo gry", 30, Color.white);
-        UiFactory.SetSize(speedLabel, 170, 64);
+        TextMeshProUGUI speedLabel = UiFactory.CreateText(speed, "Tempo animacji", 30, Color.white);
+        UiFactory.SetSize(speedLabel, 230, 64);
         for (int i = 0; i < speedButtons.Length; i++)
         {
             int chosenSpeed = i;

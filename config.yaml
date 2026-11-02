@@ -366,7 +366,7 @@ behaviors:
       learning_rate_schedule: linear
       beta_schedule: linear
       epsilon_schedule: linear
-    checkpoint_interval: 100000
+    checkpoint_interval: 500000
     network_settings:
       normalize: false
       hidden_units: 256
@@ -380,7 +380,7 @@ behaviors:
         gamma: 0.995
         strength: 1.0
     init_path: null
-    keep_checkpoints: 5
+    keep_checkpoints: 40
     even_checkpoints: false
     max_steps: 20000000
     time_horizon: 256

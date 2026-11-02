@@ -16,15 +16,17 @@ public class GameSettings
     public List<int> seats = new List<int>();
     public List<PlayerType> types = new List<PlayerType>();
     // multiplies the speed of animations and of computer players, 0 turns animations off
-    public float speed = 1f;
+    public float speed = 2f;
     // training only: rounds after which an unfinished game is scored and restarted, 0 = no limit ("-maxRounds N")
     public int roundLimit = DefaultRoundLimit;
     public const int DefaultRoundLimit = 150;
     // training only: boards played at the same time in one game window, each with its own agents ("-areas N")
     public int areas = 1;
 
-    public static readonly string[] SpeedNames = { "Wolne", "Normalne", "Szybkie", "Bez animacji" };
-    public static readonly float[] SpeedValues = { 0.5f, 1f, 2f, 0f };
+    public static readonly string[] SpeedNames = { "Wolne", "Szybkie", "Brak" };
+    public static readonly float[] SpeedValues = { 1f, 2f, 0f };
+    // "Szybkie"
+    public const int DefaultSpeedIndex = 1;
 
     // seats taken for a given number of players: opposite corners for 2,
     // the layout from the rulebook for 3

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// A coin or the crown shown in the tile panel or in the equipment panel.
+// A coin, an artifact or the crown shown in the tile panel or in the equipment panel.
 // A click moves it to the other panel (picks it up or drops it); dragging it onto the other panel does the same (see ItemDropZone).
 public class DraggableItem : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
@@ -10,34 +10,32 @@ public class DraggableItem : MonoBehaviour, IPointerClickHandler, IBeginDragHand
     public static DraggableItem Dragged { get; private set; }
 
     public bool InEquipment { get; private set; }
-    public bool IsCrown => crown;
 
     private MapController mapController;
-    private Coin coin;
-    private bool crown;
+    // a Coin, an Artifact or MapController.CrownItem
+    private object item;
     private Image image;
     private RectTransform dragCopy;
 
-    public void Init(MapController mapController, Coin coin, bool crown, bool inEquipment)
+    public void Init(MapController mapController, object item, bool inEquipment)
     {
         this.mapController = mapController;
-        this.coin = coin;
-        this.crown = crown;
+        this.item = item;
         InEquipment = inEquipment;
         image = GetComponent<Image>();
     }
 
-    public bool Matches(Coin otherCoin, bool otherCrown)
+    public bool Matches(object other)
     {
-        return otherCrown ? crown : !crown && coin == otherCoin;
+        return item == other;
     }
 
     // called on a click, or by the drop zone the item was dropped on;
     // a dragged item has already been carried there, so it does not fly again
     public void Transfer(bool animate = true)
     {
-        if (InEquipment) mapController.DropItem(coin, crown, animate);
-        else mapController.PickItem(coin, crown, animate);
+        if (InEquipment) mapController.DropItem(item, animate);
+        else mapController.PickItem(item, animate);
     }
 
     // Unity does not send a click after a drag, so a dragged item is not moved twice
